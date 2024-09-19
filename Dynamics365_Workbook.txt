@@ -1,0 +1,201 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "563ca72b-ad6f-4eb6-b227-c30c7f624d40",
+            "version": "KqlParameterItem/1.0",
+            "name": "Timerange",
+            "type": 4,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ]
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "value": {
+              "durationMs": 172800000
+            }
+          },
+          {
+            "id": "4bdd99bb-bb76-4018-bc99-c9d1bef4197f",
+            "version": "KqlParameterItem/1.0",
+            "name": "User",
+            "type": 2,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "Dynamics365Activity\r\n| summarize Count = count() by UserId\r\n| order by Count desc, UserId asc \r\n| project  Value = UserId, Label = strcat(UserId, ' - ', Count), Selected = false",
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 259200000
+            },
+            "timeContextFromParameter": "Timerange",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "id": "d212e2cc-d435-4af6-bdbc-4f5a1c33967d",
+            "version": "KqlParameterItem/1.0",
+            "name": "D365_Instance",
+            "type": 2,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "Dynamics365Activity\r\n| summarize Count = count() by InstanceUrl\r\n| order by Count desc, InstanceUrl asc \r\n| project  Value = InstanceUrl, Label = strcat(InstanceUrl, ' - ', Count), Selected = false",
+            "typeSettings": {
+              "limitSelectTo": 10,
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 259200000
+            },
+            "timeContextFromParameter": "Timerange",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "id": "6cc8dd86-e16f-4d3d-a99d-4c8907509f9b",
+            "version": "KqlParameterItem/1.0",
+            "name": "Operation",
+            "type": 2,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "Dynamics365Activity\r\n| summarize Count = count() by Message\r\n| where Message == \"Retrieve\" or  Message == \"Update\" or  Message == \"Delete\" or Message ==  \"Read\"\r\n| order by Count desc, Message asc \r\n| project  Value = Message, Label = strcat(Message, ' - ', Count), Selected = false",
+            "typeSettings": {
+              "limitSelectTo": 20,
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 259200000
+            },
+            "timeContextFromParameter": "Timerange",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "id": "e3dd3109-6a66-4c0f-b5b5-8a29deacb766",
+            "version": "KqlParameterItem/1.0",
+            "name": "Object",
+            "type": 2,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "Dynamics365Activity\r\n| summarize Count = count() by EntityId\r\n| order by Count desc, EntityId asc \r\n| project  Value = EntityId, Label = strcat(EntityId, ' - ', Count), Selected = false",
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ]
+            },
+            "timeContext": {
+              "durationMs": 0
+            },
+            "timeContextFromParameter": "Timerange",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "value": [
+              "5c78d0b3-a775-ef11-a670-000d3ade8325",
+              "fce82c88-8975-ef11-a671-002248a28c53"
+            ]
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters - 2"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "## Dynamics 365 CRM activites\n"
+      },
+      "name": "text - 2"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Dynamics365Activity\n| where \"{User:lable}\" == \"All\" or UserId in ({User})\n| where \"{D365_Instance:lable}\" == \"All\" or InstanceUrl in ({D365_Instance})\n| where \"{Operation:lable}\" == \"All\" or Message in ({Operation})\n| where \"{User:Object}\" == \"All\" or EntityId in ({Object})\n| where Message == \"Retrieve\" or  Message == \"Update\" or  Message == \"Delete\" or Message ==  \"Read\"\n| where UserId !contains \"Unknown\"\n| extend User = UserId |extend D365_Server = InstanceUrl | extend Operation = Message | extend Object_Type= EntityName |extend Object= EntityId\n| project  TimeGenerated, User, D365_Server, Operation, Object_Type, Object, UserType",
+        "size": 2,
+        "timeContextFromParameter": "Timerange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "query - 2"
+    }
+  ],
+  "fallbackResourceIds": [
+    "/subscriptions/346b2a38-af7b-4d6c-a5e3-a4e5e08e4633/resourcegroups/dynamics365/providers/microsoft.operationalinsights/workspaces/sentinel-dynamics365"
+  ],
+  "fromTemplateId": "sentinel-UserWorkbook",
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

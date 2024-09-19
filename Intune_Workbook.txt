@@ -1,0 +1,379 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "95ef3d7a-2fa8-4880-aa1d-4745dc35f301",
+            "version": "KqlParameterItem/1.0",
+            "name": "timerange",
+            "type": 4,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ]
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "value": {
+              "durationMs": 7776000000
+            }
+          },
+          {
+            "id": "acb18d07-995b-4bf1-9af3-ec9219d90844",
+            "version": "KqlParameterItem/1.0",
+            "name": "User",
+            "type": 2,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "IntuneAuditLogs\r\n| summarize Count = count() by Identity\r\n| order by Count desc, Identity asc\r\n| project  Value = Identity, Label = strcat(Identity, ' - ', Count), Selected = false\r\n",
+            "typeSettings": {
+              "limitSelectTo": 20,
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 604800000
+            },
+            "timeContextFromParameter": "timerange",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "value": [
+              "eduards@egtesting.onmicrosoft.com"
+            ]
+          },
+          {
+            "id": "a3080d54-636a-4e09-82ea-c9e32081f386",
+            "version": "KqlParameterItem/1.0",
+            "name": "OperationName",
+            "type": 2,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "IntuneAuditLogs\r\n| summarize Count = count() by OperationName\r\n| order by Count desc, OperationName asc\r\n| project  Value = OperationName, Label = strcat(OperationName, ' - ', Count), Selected = false\r\n",
+            "typeSettings": {
+              "limitSelectTo": 20,
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "value": [
+              "Patch DeviceManagementConfigurationPolicy"
+            ]
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters - 1"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "## Intune Configuration profile changes"
+      },
+      "name": "text - 2"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "IntuneAuditLogs\r\n| where \"{User:lable}\" ==\"All\" or Identity in ({User})\r\n| where \"{OperationName:lable}\" == \"All\" or OperationName in ({OperationName})\r\n| extend ConfigurationName = tostring(parse_json(tostring(parse_json(Properties).TargetDisplayNames))[0])\r\n| where ConfigurationName !contains \"<null>\"\r\n| project TimeGenerated, ConfigurationName, OperationName, Identity, ResultType\r\n| order by TimeGenerated desc\r\n\r\n",
+        "size": 0,
+        "timeContextFromParameter": "timerange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "table",
+        "tileSettings": {
+          "showBorder": false
+        }
+      },
+      "name": "query - 0"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "## Intune method\r\nAn overview of the most common Audit event methods, filtered by custom time range."
+      },
+      "name": "text - 3"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "IntuneAuditLogs\r\n| summarize countif(OperationName startswith \"Create\")\r\n| extend Title = \"Create\"",
+        "size": 4,
+        "timeContextFromParameter": "timerange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "tiles",
+        "tileSettings": {
+          "showBorder": false,
+          "titleContent": {
+            "columnMatch": "Title",
+            "formatter": 1
+          },
+          "leftContent": {
+            "columnMatch": "countif_",
+            "formatter": 12,
+            "formatOptions": {
+              "palette": "auto"
+            },
+            "numberFormat": {
+              "unit": 17,
+              "options": {
+                "maximumSignificantDigits": 3,
+                "maximumFractionDigits": 2
+              }
+            }
+          }
+        },
+        "graphSettings": {
+          "type": 0,
+          "topContent": {
+            "columnMatch": "Title",
+            "formatter": 1
+          },
+          "centerContent": {
+            "columnMatch": "countif_",
+            "formatter": 1,
+            "numberFormat": {
+              "unit": 17,
+              "options": {
+                "maximumSignificantDigits": 3,
+                "maximumFractionDigits": 2
+              }
+            }
+          }
+        }
+      },
+      "customWidth": "20",
+      "name": "query - 4"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "IntuneAuditLogs\r\n| summarize countif(OperationName startswith \"Delete\")\r\n| extend Title = \"Delete\"",
+        "size": 4,
+        "timeContextFromParameter": "timerange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "tiles",
+        "tileSettings": {
+          "showBorder": false,
+          "titleContent": {
+            "columnMatch": "Title",
+            "formatter": 1
+          },
+          "leftContent": {
+            "columnMatch": "countif_",
+            "formatter": 12,
+            "formatOptions": {
+              "palette": "auto"
+            },
+            "numberFormat": {
+              "unit": 17,
+              "options": {
+                "maximumSignificantDigits": 3,
+                "maximumFractionDigits": 2
+              }
+            }
+          }
+        }
+      },
+      "customWidth": "20",
+      "name": "query - 4 - Copy"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "IntuneAuditLogs\r\n| summarize countif(OperationName startswith \"Patch\")\r\n| extend Title = \"Patch\"",
+        "size": 4,
+        "timeContextFromParameter": "timerange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "tiles",
+        "tileSettings": {
+          "showBorder": false,
+          "titleContent": {
+            "columnMatch": "Title",
+            "formatter": 1
+          },
+          "leftContent": {
+            "columnMatch": "countif_",
+            "formatter": 12,
+            "formatOptions": {
+              "palette": "auto"
+            },
+            "numberFormat": {
+              "unit": 17,
+              "options": {
+                "maximumSignificantDigits": 3,
+                "maximumFractionDigits": 2
+              }
+            }
+          }
+        }
+      },
+      "customWidth": "20",
+      "name": "query - 4 - Copy - Copy"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "IntuneAuditLogs\r\n| summarize countif(OperationName startswith \"Assign\")\r\n| extend Title = \"Assign\"",
+        "size": 4,
+        "timeContextFromParameter": "timerange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "tiles",
+        "tileSettings": {
+          "showBorder": false,
+          "titleContent": {
+            "columnMatch": "Title",
+            "formatter": 1
+          },
+          "leftContent": {
+            "columnMatch": "countif_",
+            "formatter": 12,
+            "formatOptions": {
+              "palette": "auto"
+            },
+            "numberFormat": {
+              "unit": 17,
+              "options": {
+                "maximumSignificantDigits": 3,
+                "maximumFractionDigits": 2
+              }
+            }
+          }
+        }
+      },
+      "customWidth": "20",
+      "name": "query - 4 - Copy - Copy - Copy"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "## Search Device operations\r\nFind event logs for specified device actions."
+      },
+      "name": "text - 8"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "deb124da-dd53-42e9-b2a6-29130b9e21cf",
+            "version": "KqlParameterItem/1.0",
+            "name": "Operation",
+            "type": 2,
+            "description": "Search different types of operations/actions.",
+            "isRequired": true,
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "jsonData": "[\r\n    { \"value\":\"CreateDeviceLogCollectionRequest ManagedDevice\", \"label\":\"Log collection request\"},\r\n    { \"value\":\"CreateDownloadUrl ManagedDevice\", \"label\":\"Download URL\" },\r\n    { \"value\":\"Delete ManagedDevice\", \"label\":\"Delete\"},\r\n    { \"value\":\"syncDevice ManagedDevice\", \"label\":\"Sync\" },\r\n    { \"value\":\"wipe ManagedDevice\", \"label\":\"Wipe\" },\r\n    { \"value\":\"UpdateDevicePrimaryUsers ManagedDevice\", \"label\":\"Update primary user\" },\r\n    { \"value\":\"cleanWindowsDevice ManagedDevice\", \"label\":\"Clean (Fresh start/Autopilot reset)\" },\r\n    { \"value\":\"rebootNow ManagedDevice\", \"label\":\"Reboot\" },\r\n    { \"value\":\"windowsDefenderScan ManagedDevice\", \"label\":\"Defender Scan (quick/full)\" },\r\n    { \"value\":\"windowsDefenderUpdateSignatures ManagedDevice\", \"label\":\"Update Defender signature\" },\r\n    { \"value\":\"retire ManagedDevice\", \"label\":\"Retire\" },\r\n    { \"value\":\"Rename device ManagedDevice\", \"label\":\"Rename\" },\r\n    { \"value\":\"locateDevice ManagedDevice\", \"label\":\"Locate\" },\r\n    { \"value\":\"initiateOnDemandProactiveRemediation ManagedDevice\", \"label\":\"On demand remediation\" }\r\n]",
+            "timeContext": {
+              "durationMs": 0
+            },
+            "timeContextFromParameter": "timerange",
+            "value": "syncDevice ManagedDevice"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters - 9"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "IntuneAuditLogs\r\n| where OperationName == \"{Operation}\"\r\n| extend IntuneDeviceID = tostring(parse_json(tostring(parse_json(Properties).TargetObjectIds))[0])\r\n| order by TimeGenerated desc\r\n| project TimeGenerated, IntuneDeviceID, Identity, Properties",
+        "size": 0,
+        "timeContextFromParameter": "timerange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "query - 10"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "## All Recent Intune Activities"
+      },
+      "name": "text - 11"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "IntuneAuditLogs\r\n| where \"{User:lable}\" ==\"All\" or Identity in ({User})\r\n| where \"{User:lable}\" == \"All\" or OperationName in ({OperationName})\r\n| extend ConfigurationName = tostring(parse_json(tostring(parse_json(Properties).TargetDisplayNames))[0])\r\n| project TimeGenerated, ConfigurationName, OperationName, Identity, ResultType, Properties\r\n| extend Modified = tostring(parse_json(tostring(parse_json(Properties).Targets))[0]) \r\n| project TimeGenerated, ConfigurationName, OperationName, Identity, ResultType, Properties, Modified\r\n| extend  ModifiedProp = tostring(parse_json(tostring(parse_json(Modified).ModifiedProperties))[0]) \r\n| project TimeGenerated, ConfigurationName, OperationName, Identity, ResultType, ModifiedProp, Properties\r\n| extend TargetObjectIds = tostring(parse_json(tostring(parse_json(Properties).TargetObjectIds))[0])\r\n| project TimeGenerated, ConfigurationName, OperationName, Identity, ResultType, TargetObjectIds, ModifiedProp\r\n| order by TimeGenerated desc\r\n",
+        "size": 0,
+        "timeContextFromParameter": "timerange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "query - 12"
+    }
+  ],
+  "fallbackResourceIds": [
+    "/subscriptions/d6042be7-13c1-4240-84d4-40f0a8779886/resourcegroups/rg-sentinel-prod-weu-003/providers/microsoft.operationalinsights/workspaces/microsoft-sentinel"
+  ],
+  "fromTemplateId": "sentinel-UserWorkbook",
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
