@@ -72,7 +72,7 @@
             "multiSelect": true,
             "quote": "'",
             "delimiter": ",",
-            "query": "Dynamics365Activity\r\n| summarize Count = count() by UserId\r\n| extend label = strcat(UserId, \" - \", Count)\r\n| project UserId, label\r\n",
+            "query": "Dynamics365Activity\r\n| where Message == \"Retrieve\" or  Message == \"Update\" or  Message == \"Delete\" or Message ==  \"Read\"\r\n| summarize Count = count() by UserId\r\n| extend label = strcat(UserId, \" - \", Count)\r\n| project UserId, label\r\n",
             "typeSettings": {
               "additionalResourceOptions": [
                 "value::all"
@@ -80,7 +80,7 @@
               "showDefault": false
             },
             "timeContext": {
-              "durationMs": 2419200000
+              "durationMs": 0
             },
             "timeContextFromParameter": "Timerange",
             "queryType": 0,
@@ -192,7 +192,7 @@
     }
   ],
   "fallbackResourceIds": [
-    "/subscriptions/d6042be7-13c1-4240-84d4-40f0a8779886/resourcegroups/rg-sentinel-prod-weu-003/providers/microsoft.operationalinsights/workspaces/microsoft-sentinel"
+    "/subscriptions/346b2a38-af7b-4d6c-a5e3-a4e5e08e4633/resourcegroups/dynamics365/providers/microsoft.operationalinsights/workspaces/sentinel-dynamics365"
   ],
   "fromTemplateId": "sentinel-UserWorkbook",
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
