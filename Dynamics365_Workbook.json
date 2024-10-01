@@ -61,7 +61,7 @@
               "durationMs": 86400000
             },
             "value": {
-              "durationMs": 2419200000
+              "durationMs": 14400000
             }
           },
           {
@@ -86,7 +86,7 @@
             "queryType": 0,
             "resourceType": "microsoft.operationalinsights/workspaces",
             "value": [
-              "value::all"
+              "Valters.Urbanovics@squalio.com"
             ]
           },
           {
@@ -122,7 +122,7 @@
             "multiSelect": true,
             "quote": "'",
             "delimiter": ",",
-            "query": "Dynamics365Activity\r\n| summarize Count = count() by Message\r\n| where Message == \"Retrieve\" or  Message == \"Update\" or  Message == \"Delete\" or Message ==  \"Read\"\r\n| order by Count desc, Message asc \r\n| extend label = strcat(Message, \" - \", Count)\r\n| project Message, label\r\n",
+            "query": "Dynamics365Activity\r\n| where Message == \"Retrieve\" or  Message == \"Update\" or  Message == \"Delete\" or Message ==  \"Read\" and isnotnull(UserId)\r\n| summarize Count = count() by Message\r\n| project Message\r\n",
             "typeSettings": {
               "additionalResourceOptions": [
                 "value::all"
@@ -130,7 +130,7 @@
               "showDefault": false
             },
             "timeContext": {
-              "durationMs": 2419200000
+              "durationMs": 0
             },
             "timeContextFromParameter": "Timerange",
             "queryType": 0,
