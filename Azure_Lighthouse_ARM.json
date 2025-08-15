@@ -1,0 +1,111 @@
+{
+ "$schema": "https://schema.management.azure.com/schemas/2019-08-01/subscriptionDeploymentTemplate.json#",
+ "contentVersion": "1.0.0.0",
+ "parameters": {
+  "mspOfferName": {
+   "type": "string",
+   "metadata": {
+    "description": "Specify a unique name for your offer"
+   },
+   "defaultValue": "Pilot"
+  },
+  "mspOfferDescription": {
+   "type": "string",
+   "metadata": {
+    "description": "Name of the Managed Service Provider offering"
+   },
+   "defaultValue": "Pilot"
+  },
+  "rgName": {
+   "type": "string",
+   "defaultValue": "[Sentinel-Rg-Name]"
+  }
+ },
+ "variables": {
+  "mspRegistrationName": "[guid(parameters('mspOfferName'))]",
+  "mspAssignmentName": "[guid(parameters('mspOfferName'))]",
+  "managedByTenantId": "119cfc3c-8215-4804-8950-6388c0e14143",
+  "authorizations": [
+   {
+    "principalId": "d2b6914d-b7f3-4446-ae4b-88806dd9ad9d",
+    "roleDefinitionId": "acdd72a7-3385-48ef-bd42-f606fba81ae7",
+    "principalIdDisplayName": "SOC_pilot"
+   },
+   {
+    "principalId": "d2b6914d-b7f3-4446-ae4b-88806dd9ad9d",
+    "roleDefinitionId": "ab8e14d6-4a74-4a29-9ba8-549422addade",
+    "principalIdDisplayName": "SOC_pilot"
+   },
+   {
+    "principalId": "d2b6914d-b7f3-4446-ae4b-88806dd9ad9d",
+    "roleDefinitionId": "f4c81013-99ee-4d62-a7ee-b3f1f648599a",
+    "principalIdDisplayName": "SOC_pilot"
+   },
+   {
+    "principalId": "b15560da-4cda-4f6e-bd47-ff873521bd98",
+    "roleDefinitionId": "87a39d53-fc1b-424a-814c-f7e04687dc9e",
+    "principalIdDisplayName": "Squalio SOC L2 Support"
+   },
+   {
+    "principalId": "d2b6914d-b7f3-4446-ae4b-88806dd9ad9d",
+    "roleDefinitionId": "51d6186e-6489-4900-b93f-92e23144cca5",
+    "principalIdDisplayName": "SOC_pilot"
+   },
+   {
+    "principalId": "d2b6914d-b7f3-4446-ae4b-88806dd9ad9d",
+    "roleDefinitionId": "92aaf0da-9dab-42b6-94a3-d43ce8d16293",
+    "principalIdDisplayName": "SOC_pilot"
+   }
+  ]
+ },
+ "resources": [
+  {
+   "type": "Microsoft.ManagedServices/registrationDefinitions",
+   "apiVersion": "2020-02-01-preview",
+   "name": "[variables('mspRegistrationName')]",
+   "properties": {
+    "registrationDefinitionName": "[parameters('mspOfferName')]",
+    "description": "[parameters('mspOfferDescription')]",
+    "managedByTenantId": "[variables('managedByTenantId')]",
+    "authorizations": "[variables('authorizations')]"
+   }
+  },
+  {
+   "type": "Microsoft.Resources/deployments",
+   "apiVersion": "2018-05-01",
+   "name": "rgAssignment",
+   "resourceGroup": "[parameters('rgName')]",
+   "dependsOn": [
+    "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', variables('mspRegistrationName'))]"
+   ],
+   "properties": {
+    "mode": "Incremental",
+    "template": {
+     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+     "contentVersion": "1.0.0.0",
+     "parameters": {},
+     "resources": [
+      {
+       "type": "Microsoft.ManagedServices/registrationAssignments",
+       "apiVersion": "2020-02-01-preview",
+       "name": "[variables('mspAssignmentName')]",
+       "properties": {
+        "registrationDefinitionId": "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', variables('mspRegistrationName'))]"
+       }
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "outputs": {
+  "mspOfferName": {
+   "type": "string",
+   "value": "[concat('Managed by', ' ', parameters('mspOfferName'))]"
+  },
+  "authorizations": {
+   "type": "array",
+   "value": "[variables('authorizations')]"
+  }
+ }
+}
